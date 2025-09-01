@@ -1,14 +1,18 @@
-!/bin/bash
-set -e 
+#!/usr/bin/env bash
+set -euo pipefail 
 
-echo ">>>Updating system..."
+INSTALL_LAZYGIT=true
+USE_DOCKER_COMPOSE_FALLBACK=true
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+
+echo ">>> Updating system..."
 sudo apt update && sudo apt upgrade -y
 
 echo ">>>Installing base packages..."
 sudo apt install -y \
   git curl wget ncdu build-essential stow \
   zsh tmux neovim htop ripgrep fd-find fzf \
-  ca-certificates gnupg lsb-release 
+  ca-certificates gnupg lsb-release software-properties-common 
 
 echo ">>>Installing Oh My Zsh..."
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -20,21 +24,23 @@ ZSH_CUSTOM=${ZSH_CUSTOM: -$HOME/.oh-my-zsh/custom}
 git clone  https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions || true
 git clone https://github.com/zsh-users/zsh-syntax-highlighting $ZSH_CUSTOM/plugins/zsh-syntax-highlighting || true 
 echo ">>> Installing NVM"
-if [ !  -d "$HOME/.nvm"]; then
-  curl -o- 
+if [ ! -d "$HOME/.nvm"]; then
+  curl -fsSL 
 https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh / bash 
 fi 
 
-export  NVM_DIR="$HOME/.nvm"
+export NVM_DIR="$HOME/.nvm"
 # shellcheck disable=SC1091
 [ -s "$NVM_DIR/nvm.sh" ]  && \. "$NVM_DIR/nvm.sh" 
-nvm install --lts 
-nvm alias default 'lts/*'
+if ! command -v node >/dev/null 2>&1; then
+  nvm install --lts 
+  nvm alias default 'lts/*'
+fi
 npm install -g pnpm 
 
 echo ">>> Installing Docker..."
-if ! command -v  docker &>/dev/null; then
-  sudo mkdir -m 0755 -p /etc/apt/keyrings 
+if ! command -v  docker >/dev/null 2>&1; then
+  sudo install -m 0755 -d /etc/apt/keyrings 
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg 
   echo \
    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
@@ -45,71 +51,45 @@ if ! command -v  docker &>/dev/null; then
   sudo usermod -aG docker $USER 
 fi 
 
-echo "Linking configs from dotfiles..."
-cd ~/dotfiles 
-stow zsh 
-stow nvim 
-stow tmux 
-stow git 
-
-echo "Ready"
-echo "Restart terminal or enter 'exec zsh' to turn on Zsh" 
-
-
-echo ">>> Installing Docker Compose..."
-DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/release/latest | grep tag_name | cut -d '"' -f 4)
-sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" \ -o /usr/local/bin/docker-compose 
-sudo chmod +x /usr/local/bin/docker-compose  
-
-
-### FRONTEND ( NEXT.JS / REACT ) 
-
-pnpm create next-app myapp 
-cd myapp 
-pnpm dev 
-
-### BACKEND ( NESTJS / EXPRESS ) 
-pnpm add -g @nestjs/cli 
-nest  new backend 
-pnpm run start:dev  
-
-### CLI-instruments
-sudo add-apt-repository ppa:lazygit-team/release -y 
-sudo apt udpate
-sudo apt install lazygit -y 
-
-echo "Installing packages"
-sudo apt update && sudo apt install -y \
-  git curl wget build-essential \ 
-  neovim tmux zsh fzf ripgrep \ 
-  nodejs npm docker.io 
-
-echo "Copying dotfiles" 
-sudo npm install -g pnpm typescript ts-node 
-
-echo "Cloning dotfiles" 
-if [ ! -d "$HOME/.dotfiles" ]; then 
-    git clone https://github.com/username/dotfiles ~/.dotfiles 
+if $USE_DOCKER_COMPOSE_FALLBACK; then
+  if ! docker compose version >/dev/null 2>&1; then 
+    echo ">>>  Installing Docker Compose standalone (fallback)..."
+    DOCKER_COMPOSE_VERSION="$(
+      curl -fsSL https://api.github.com/repos/docker/compose/releases/latest \
+        | sed -n 's/.*"tag_name":[[:space:]]*"\(v\?[0-9][^"]*\)".*/\1/p' | head -n1 )"
+      sudo curl -fsSL \
+    "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m" \
+    -o /usr/local/bin/docker-compose 
+      sudo chmod +x /usr/local/bin/docker-compose 
+  fi 
 fi 
 
-echo "Create hrefs" 
-mkdir -p ~/.config 
-ln -sf ~/.dotfiles/nvim ~/.config/nvim 
-ln -sf ~/.dotfiles/tmux.conf ~/.tmux.conf 
-ln -sf ~/.dotfiles/zshrc ~/.zshrc  
+# --- Lazygit (optional) ---
+if $INSTALL_LAZYGIT; then 
+  echo ">>> Installing lazygit..."
+  if ! command -v lazygit >/dev/null 2>&1; then
+    sudo add-apt-repository -y ppa:lazygit-team/release
+    sudo apt update
+    sudo apt install -y lazygit
+  fi 
+fi 
 
-sudo apt install -y git 
-git clone git@github.com:bibarys1327/dotfiles.git ~/dotfiles 
-cd ~/dotfiles 
-chmod +x install.sh 
-./install.sh 
 
-curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-source ~/.zshrc
-nvm install --lts
-nvm alias default lts/*
-node -v
-npm -v 
-nvm list
+# ---- Dotfiles with stow ----
+if [ -d "DOTFILES_DIR" ]; then 
+  echo ">>> Linking dotfiles from: $DOTFILES_DIR"
+  cd "$DOTFILES_DIR"
+  # this folder/files must to be in your dotfiles 
+  stow -v zsh || true 
+  stow -v nvim || true 
+  stow -v tmux || true
+  stow -v git || true
+else
+  echo ">>> No dotfiles dir at $DOTFILES_DIR - skipping stow"
+fi 
+
+echo ">>> All Done!"
+echo "Log out (or'newgrp docker') to make the docker group work"
+echo "Enable Zsh now:run 'exec zsh'"
 
 
