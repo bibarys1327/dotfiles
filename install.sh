@@ -3,7 +3,7 @@ set -euo pipefail
 
 INSTALL_LAZYGIT=true
 USE_DOCKER_COMPOSE_FALLBACK=true
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/my-dev-env/dotfiles}"
 
 echo ">>> Updating system..."
 sudo apt update && sudo apt upgrade -y

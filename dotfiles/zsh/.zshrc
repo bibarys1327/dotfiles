@@ -6,11 +6,17 @@ fi
 # --- Oh My Zsh setup ---
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="powerlevel10k/powerlevel10k"
-plugins=(git)
+
+plugins=(
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+)
 
 source $ZSH/oh-my-zsh.sh
 
 # --- User configuration ---
+
 # Preferred editor
 export EDITOR="nvim"
 
@@ -18,13 +24,35 @@ export EDITOR="nvim"
 export PATH="$HOME/.local/bin:$PATH"
 
 # fzf (если установлен)
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh  
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Aliases
 alias ll="ls -la"
 alias gs="git status"
 alias gc="git commit"
-alias v="nvim"
+
+# Docker shortcuts
+alias dps="docker ps"
+alias dcu="docker-compose up -d"
+alias dcd="docker-compose down"
+alias dcb="docker-compose build"
+alias dcl="docker-compose logs -f"
+
+# pnpm shortcuts
+alias p="pnpm"
+alias pd="pnpm dev"
+alias pb="pnpm build"
+alias pi="pnpm install"
+alias pa="pnpm add"
+
+# Функция вместо alias для v (открывает файл или папку)
+v() {
+  if [ -d "$1" ]; then
+    nvim "$1"
+  else
+    nvim "$@"
+  fi
+}
 
 # --- NVM ---
 export NVM_DIR="$HOME/.nvm"
