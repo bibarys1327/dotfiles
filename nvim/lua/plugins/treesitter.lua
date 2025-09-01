@@ -9,7 +9,7 @@ return {
         indent = { enable = true },
         ensure_installed = {
           "lua", "javascript", "typescript", "tsx",
-          "json", "yaml", "dockerfile", "bash", "markdown"
+          "json", "yaml", "dockerfile", "bash", "markdown", "css"
         },
       })
     end,
