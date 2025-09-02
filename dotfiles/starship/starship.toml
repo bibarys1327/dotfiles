@@ -1,0 +1,10 @@
+[character]
+success_symbol = "[➜](bold green) "
+error_symbol = "[✗](bold red) "
+
+[git_branch]
+symbol = "🌱 "
+
+[nodejs]
+symbol = "⬢ "
+format = "[$symbol($version )]($style)"

@@ -1,0 +1,34 @@
+{
+  "name": "My Fullstack Dev Env",
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "../docker-compose.override.yml"
+  ],
+  "service": "app",
+  "workspaceFolder": "/home/dev/app",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/zsh",
+    "editor.formatOnSave": true,
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true
+    },
+    "eslint.format.enable": true,
+    "typescript.tsdk": "node_modules/typescript/lib"
+  },
+  "extensions": [
+    "ms-vscode.vscode-typescript-next",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "Prisma.prisma",
+    "bradlc.vscode-tailwindcss",
+    "eamodio.gitlens",
+    "ms-azuretools.vscode-docker",
+    "GitHub.copilot"
+  ],
+  "postCreateCommand": "/home/dev/.devcontainer/post-create.sh",
+  "remoteUser": "dev",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  }
+}

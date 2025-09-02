@@ -1,0 +1,10 @@
+[user]
+  name = Bibarys
+  email = bibaryssultan1327@gmail.com
+
+[core]
+  editor = nvim
+  autocrlf = input
+
+[color]
+  ui = auto

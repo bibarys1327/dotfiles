@@ -1,28 +1,40 @@
 version: "3.9"
 services:
   app:
-    build: . 
-    command: pnpm dev 
-    working_dir: /app
+    build: .
+    container_name: dev_app
     volumes:
-      - .:/app 
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - "3000:3000"
+    env_file: .env
     depends_on:
-      - db 
-      - redis 
-  
+      - db
+
   db:
-    image: postgres:15
+    image: postgres:16
+    container_name: dev_db
+    restart: always
     environment:
-      POSTGRES_USER: dev 
-      POSTGRES_PASSWORD: dev 
-      POSTGRES_DB: devdb 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: devdb
     ports:
-      - "5432:5432" 
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-  redis:
-    image: redis:alpine
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: dev_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@dev.local
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "6379:6379"
+      - "8080:80"
+    depends_on:
+      - db
 
+volumes:
+  postgres_data:
