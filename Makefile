@@ -4,7 +4,11 @@ DOCKER_COMPOSE := docker compose
 ENV_FILE := .env
 
 # === Phony targets ===
-.PHONY: install setup health up down restart logs ps lint format shell test clean help
+.PHONY: install setup health up down restart logs ps shell \
+        lint format lint-js dev build start \
+        test clean db-migrate db-studio db-reset \
+        devcontainer devcontainer-build devcontainer-open \
+        help
 
 # === Installation ===
 install:
@@ -38,7 +42,7 @@ ps:
 
 shell:
 	@echo ">>> Opening shell in app container..."
-	@$(DOCKER_COMPOSE) exec app bash || true
+	@$(DOCKER_COMPOSE) exec app zsh || true
 
 # === Lint & Format ===
 lint:
@@ -46,9 +50,13 @@ lint:
 	@pre-commit run --all-files || true
 
 format:
-	@echo ">>> Formatting code..."
+	@echo ">>> Formatting Python code..."
 	@black . || true
 	@flake8 . || true
+
+lint-js:
+	@echo ">>> Running ESLint..."
+	@npx eslint . --ext .js,.ts,.tsx
 
 # === Tests ===
 test:
@@ -61,46 +69,84 @@ clean:
 	@rm -rf __pycache__/ .pytest_cache/ dist/ build/ *.egg-info
 	@docker system prune -f
 
+# === Database (Prisma + Postgres) ===
 db-migrate:
-	@bash ./scripts/db.sh migrate
+	@echo ">>> Running Prisma migrations..."
+	@pnpm prisma migrate dev
 
 db-studio:
-	@bash ./scripts/db.sh studio
+	@echo ">>> Opening Prisma Studio..."
+	@pnpm prisma studio
 
 db-reset:
-	@bash ./scripts/db.sh reset
+	@echo ">>> Resetting database..."
+	@pnpm prisma migrate reset --force
 
+# === JavaScript / Next.js ===
 dev:
 	@echo ">>> Starting Next.js in dev mode..."
-	@npm run dev
+	@pnpm dev
 
 build:
-	@echo ">>> Building project..."
-	@npm run build
+	@echo ">>> Building Next.js project..."
+	@pnpm build
 
 start:
-	@echo ">>> Starting project..."
-	@npm run start
+	@echo ">>> Starting Next.js project..."
+	@pnpm start
 
-lint-js:
-	@echo ">>> Running ESLint..."
-	@eslint . --ext .js,.ts,.tsx
+# === Devcontainer ===
+devcontainer:
+	@echo ">>> Starting Devcontainer..."
+	@devcontainer up --workspace-folder .
+
+devcontainer-build:
+	@echo ">>> Building Devcontainer image..."
+	@devcontainer build --workspace-folder .
+
+devcontainer-open:
+	@echo ">>> Opening VS Code in Devcontainer..."
+	@code --folder-uri "vscode-remote://dev-container+$(PROJECT_NAME)/home/dev/app"
 
 # === Help ===
 help:
 	@echo ""
 	@echo "📌 Available commands:"
-	@echo "  make install    - Run environment installer"
-	@echo "  make setup      - Run project setup script"
-	@echo "  make health     - Run healthcheck script"
-	@echo "  make up         - Start docker containers"
-	@echo "  make down       - Stop docker containers"
-	@echo "  make restart    - Restart docker stack"
-	@echo "  make logs       - Tail docker logs"
-	@echo "  make ps         - Show docker containers"
-	@echo "  make shell      - Open bash inside app container"
-	@echo "  make lint       - Run pre-commit hooks"
-	@echo "  make format     - Format Python code"
-	@echo "  make test       - Run tests"
-	@echo "  make clean      - Cleanup cache & docker"
+	@echo "  make install            - Run environment installer"
+	@echo "  make setup              - Run project setup script"
+	@echo "  make health             - Run healthcheck script"
+	@echo ""
+	@echo "🐳 Docker:"
+	@echo "  make up                 - Start docker containers"
+	@echo "  make down               - Stop docker containers"
+	@echo "  make restart            - Restart docker stack"
+	@echo "  make logs               - Tail docker logs"
+	@echo "  make ps                 - Show docker containers"
+	@echo "  make shell              - Open zsh inside app container"
+	@echo ""
+	@echo "🧹 Lint & Format:"
+	@echo "  make lint               - Run Python pre-commit hooks"
+	@echo "  make format             - Format Python code (black, flake8)"
+	@echo "  make lint-js            - Run ESLint for JS/TS"
+	@echo ""
+	@echo "🧪 Tests:"
+	@echo "  make test               - Run tests"
+	@echo ""
+	@echo "🗄️ Database (Prisma + Postgres):"
+	@echo "  make db-migrate         - Run Prisma migrations"
+	@echo "  make db-studio          - Open Prisma Studio"
+	@echo "  make db-reset           - Reset database"
+	@echo ""
+	@echo "⚡ Next.js / Node.js:"
+	@echo "  make dev                - Start Next.js in dev mode"
+	@echo "  make build              - Build Next.js project"
+	@echo "  make start              - Start Next.js project"
+	@echo ""
+	@echo "🛠️ Devcontainer:"
+	@echo "  make devcontainer       - Start Devcontainer"
+	@echo "  make devcontainer-build - Build Devcontainer image"
+	@echo "  make devcontainer-open  - Open project in VS Code Devcontainer"
+	@echo ""
+	@echo "🧹 Cleanup:"
+	@echo "  make clean              - Cleanup cache & docker"
 	@echo ""

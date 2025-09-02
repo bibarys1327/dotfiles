@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* твои кастомные стили можно добавлять ниже */
+html, body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}

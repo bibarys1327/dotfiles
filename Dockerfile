@@ -53,3 +53,8 @@ EXPOSE 3000
 
 # По умолчанию запускаем dev-сервер
 CMD ["pnpm", "dev"]
+
+COPY --chown=dev:dev scripts/ /home/dev/scripts/
+COPY --chown=dev:dev docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
