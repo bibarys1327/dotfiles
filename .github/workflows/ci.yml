@@ -1,13 +1,54 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: mydb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Build Docker image
-        run: docker build -t my-dev-env .
-      - name: Run healthcheck
-        run: ./scripts/healthcheck.sh
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⚡ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: 📦 Install pnpm
+        run: npm install -g pnpm@9.12.0
+
+      - name: 📥 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 🔧 Generate Prisma Client
+        run: pnpm prisma:generate
+
+      - name: 🛠 Run lint
+        run: pnpm lint
+
+      - name: 🎨 Check formatting
+        run: pnpm check-format
+
+      - name: 🏗 Build project
+        run: pnpm build

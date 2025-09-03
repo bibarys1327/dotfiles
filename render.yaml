@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: my-dev-env
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        value: postgresql://postgres:postgres@db:5432/mydb?schema=public

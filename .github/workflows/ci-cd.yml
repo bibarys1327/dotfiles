@@ -1,0 +1,83 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  # === Проверка кода ===
+  lint-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🛎 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⚡ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: 📦 Install dependencies
+        run: |
+          npm install -g pnpm
+          pnpm install
+
+      - name: 🔍 Run lint
+        run: pnpm lint
+
+      - name: 🛠 Run build
+        run: pnpm build
+
+  # === Docker build & push ===
+  docker:
+    runs-on: ubuntu-latest
+    needs: lint-build
+    steps:
+      - name: 🛎 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🔑 Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🛠 Build & push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}/my-dev-env:latest
+
+  # === Deploy to Kubernetes ===
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker
+    steps:
+      - name: 🛎 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🔑 Setup kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.30.0
+
+      - name: 🔑 Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.15.0
+
+      - name: 📂 Create kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG_DATA }}" > ~/.kube/config
+
+      - name: 🚀 Deploy Helm Chart
+        run: |
+          helm upgrade --install my-dev-env ./helm/my-dev-env \
+            --namespace my-dev-env \
+            --create-namespace \
+            --set app.image=ghcr.io/${{ github.repository }}/my-dev-env:latest

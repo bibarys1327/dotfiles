@@ -1,0 +1,22 @@
+namespace: my-dev-env
+
+app:
+  name: next-app
+  image: ghcr.io/username/my-dev-env:latest
+  replicas: 2
+  port: 3000
+  env:
+    NODE_ENV: production
+    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/mydb?schema=public"
+
+postgres:
+  user: postgres
+  password: postgres
+  db: mydb
+  image: postgres:16
+  storage: 5Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  host: mydev.local
