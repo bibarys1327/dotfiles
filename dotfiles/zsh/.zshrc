@@ -32,6 +32,7 @@ alias gs="git status"
 alias gc="git commit"
 
 # Docker shortcuts
+alias dco="docker compose"
 alias dps="docker ps"
 alias dcu="docker-compose up -d"
 alias dcd="docker-compose down"
