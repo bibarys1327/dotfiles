@@ -1,7 +1,4 @@
-# --- Powerlevel10k instant prompt ---
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+eval "$(starship init zsh)"
 
 # --- Oh My Zsh setup ---
 export ZSH="$HOME/.oh-my-zsh"

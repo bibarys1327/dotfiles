@@ -3,7 +3,7 @@ return {
     "catppuccin/nvim",
     name = "catppuccin",
     priority = 1000,
-    coonfig = function()
+    config = function()
       require("catppuccin").setup({
         flavour = "macchiato",
         integrations = {
@@ -15,7 +15,7 @@ return {
           dap = true,
         },
       })
-      vim.cmd.colorscheme("catppuccin-macchiato")
+      vim.cmd.colorscheme("catppuccin") -- Исправлено: должно быть "catppuccin", а не "catppuccin-macchiato"
     end,
-  },
+  }
 }
