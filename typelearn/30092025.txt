@@ -1,0 +1,13 @@
+sudo apt update sudo apt install -y  apparmor apparmor-utils apparmor-profiles
+sudo systemctl status apparmor
+sudo journalctl -k | grep -i apparmor sudo journalctl | grep apparmor
+sudo tail -n 200 /var/log/syslog | grep apparmor
+ls ls / ls -l / Ctrl + L cd ~ cd .. 
+cp rm mv mkdir diff . and ..
+ls -a ~/.bashrc (copy in: /etc/skel/.bashrc) HISTCONTROL, HISTSIZE 
+nvim ~/.bashrc  source ~/.bashrc 
+in .bashrc : alias c = "clear" source ~/.bashrc alias 
+alias install='sudo apt install' alias speedtest='curl -s https://raw.github.com' 
+nano ~/.bashrc alias h="history" source ~/.bashrc
+alias - create  unalias - remove  ~/.bashrc  - always
+

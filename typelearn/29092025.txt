@@ -1,0 +1,36 @@
+$ -> user
+# -> root
+hostname    whoami    uname   uname -a
+uptime  ech0 $PATH
+commands are programs that are stored in special folders
+whereis   which  
+in Linux all starts with (/)
+ls -R ls -lh   ls --color=auto
+echo ~
+cat more less tail 
+touch cp -v  *  *.png  file3* file?.txt 
+mv -v  rm -v  * 
+touch .hidden.txt  ls -a
+find ~/Pictures -name "*.png"
+mkdir dir1/dir2  mkdir -p dir3/dir4/dir5
+rmdir dir1  rm -rv dir1  rm -R rm --recursive
+
+HOW INSTALL DOCKER!!!
+sudo apt-get remove -y docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc
+sudo apt-get update 
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \ -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc 
+echo \ "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \ https://download.docker.com/linux/ubuntu \ $(./etc/os-release && echo \"${UBUNTU_CODENAME:-$VERSION_CODENAME}\") stable" | \ sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo systemctl enable --now docker.service
+sudo systemctl enable --now containerd.service 
+sudo systemctl status docker 
+sudo docker run hello-world
+docker run hello-world
+sudo groupadd docker 
+sudo usermod -aG docker $USER
+newgrp docker
+

@@ -1,0 +1,40 @@
+(A): ssh username@ip_address
+all configs: ~/.ssh/
+ssh-keys more safter than passwords
+private-key - don't share with anyone
+public-key - copy on remote-server
+Creating ssh-keys:
+ssh-keygen -t ed25519
+Copying public-key  on server:
+ssh-copy-id username@ip_address
+
+(B): File coniguration SSH (~/.ssh/config)
+Why? To not remember ip_address,usernames, ports for every server!!!
+Create or redactor file ~/.ssh/config
+Add into block of code for every server:
+Host my_awesome_server  #  Short remember name
+    HostName 192.168.1.100  #  IP-address or domen name
+    User root # Name of user on the server
+    Port 22 # Port (default 22, you can not specify)
+Now for connect enough this command:
+ssh my_awesome_server
+
+Security (be sure to study)
+Turn off authentication from password. After ssh-keys (check ssh works stable)
+On Server open /etc/ssh/sshd_config 
+find #PasswordAuthentication yes, uncomment and change yes -> no
+Restart service: systemctl restart sshd
+
+TroubleShooting 
+Network: ping ip_address
+Check if right the username and password or ssh-key
+Port 22 (or your coustom Port) is free
+Logs (will be the message what is wrong with  your ssh)
+sudo tail -f /var/log/auth.log
+# Or with systemd:
+sudo journalctl -u ssh -f
+
+Permissions to files SSH very strong
+Folder ~/.ssh must have rights 700(drwx------)
+private-key (example, id_rsa) must have rights 600 (-rw------)
+public-key  (id_rsa.pub) must have rights 644 (-rw-r--r-)
