@@ -8,11 +8,9 @@ return {
   },
 
   config = function()
-    local lspconfig = require("lspconfig")
     local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
     require("mason").setup()
-
     require("mason-lspconfig").setup({
       ensure_installed = {
         "tsserver",
@@ -25,30 +23,26 @@ return {
     })
 
     local servers = {
-      "tsserver",
-      "html",
-      "cssls",
-      "jsonls",
-      "eslint",
-      "lua_ls",
+      tsserver = "ts_ls",  -- tsserver в Mason → ts_ls в vim.lsp.config
+      html = "html",
+      cssls = "cssls",
+      jsonls = "jsonls",
+      eslint = "eslint",
+      lua_ls = "lua_ls",
     }
 
-    for _, s in ipairs(servers) do
-      lspconfig[s].setup({
+    for mason_name, lsp_name in pairs(servers) do
+      vim.lsp.config[lsp_name].setup({
         capabilities = capabilities,
       })
     end
 
-    -- Lua settings
-    lspconfig.lua_ls.setup({
+    -- Lua LSP настройки
+    vim.lsp.config.lua_ls.setup({
       settings = {
         Lua = {
-          diagnostics = {
-            globals = { "vim" },
-          },
-          workspace = {
-            library = vim.api.nvim_get_runtime_file("", true),
-          },
+          diagnostics = { globals = { "vim" } },
+          workspace = { library = vim.api.nvim_get_runtime_file("", true) },
         },
       },
     })
