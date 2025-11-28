@@ -9,11 +9,14 @@ return {
 
   config = function()
     local capabilities = require("cmp_nvim_lsp").default_capabilities()
+    local lsp_config = vim.lsp.config
 
     require("mason").setup()
+
+    -- Правильные имена серверов в Neovim 0.11
     require("mason-lspconfig").setup({
       ensure_installed = {
-        "tsserver",
+        "ts_ls",
         "html",
         "cssls",
         "jsonls",
@@ -22,26 +25,24 @@ return {
       },
     })
 
-    -- Соответствие Mason → LSP names
+    -- Список серверов
     local servers = {
-      tsserver = "ts_ls",  -- новое имя в Neovim 0.11
-      html = "html",
-      cssls = "cssls",
-      jsonls = "jsonls",
-      eslint = "eslint",
-      lua_ls = "lua_ls",
+      "ts_ls",
+      "html",
+      "cssls",
+      "jsonls",
+      "eslint",
+      "lua_ls",
     }
 
-    local lsp_config = vim.lsp.config
-
-    -- Подключаем все сервера
-    for mason_name, lsp_name in pairs(servers) do
-      lsp_config(lsp_name, {
+    -- Подключаем сервера
+    for _, server in ipairs(servers) do
+      lsp_config(server, {
         capabilities = capabilities,
       })
     end
 
-    -- Отдельные настройки Lua
+    -- Отдельные настройки Lua LSP
     lsp_config("lua_ls", {
       capabilities = capabilities,
       settings = {
