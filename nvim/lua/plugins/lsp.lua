@@ -22,8 +22,9 @@ return {
       },
     })
 
+    -- Соответствие Mason → LSP names
     local servers = {
-      tsserver = "ts_ls",  -- tsserver в Mason → ts_ls в vim.lsp.config
+      tsserver = "ts_ls",  -- новое имя в Neovim 0.11
       html = "html",
       cssls = "cssls",
       jsonls = "jsonls",
@@ -31,18 +32,25 @@ return {
       lua_ls = "lua_ls",
     }
 
+    local lsp_config = vim.lsp.config
+
+    -- Подключаем все сервера
     for mason_name, lsp_name in pairs(servers) do
-      vim.lsp.config[lsp_name].setup({
+      lsp_config(lsp_name, {
         capabilities = capabilities,
       })
     end
 
-    -- Lua LSP настройки
-    vim.lsp.config.lua_ls.setup({
+    -- Отдельные настройки Lua
+    lsp_config("lua_ls", {
+      capabilities = capabilities,
       settings = {
         Lua = {
           diagnostics = { globals = { "vim" } },
-          workspace = { library = vim.api.nvim_get_runtime_file("", true) },
+          workspace = {
+            library = vim.api.nvim_get_runtime_file("", true),
+            checkThirdParty = false,
+          },
         },
       },
     })
