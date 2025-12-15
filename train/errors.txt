@@ -1,72 +1,35 @@
 
 > javascript-exercises@1.0.0 test
-> jest pigLatin.spec.js
+> jest snakeCase.spec.js
 
-FAIL archive/archived_pigLatin/pigLatin.spec.js
-  translate
-    ✕ translates a word beginning with a vowel (3 ms)
-    ✓ translates a word beginning with a consonant (1 ms)
-    ✓ translates a word beginning with two consonants
-    ✕ translates two words (2 ms)
-    ✓ translates a word beginning with three consonants (1 ms)
-    ✓ counts "sch" as a single phoneme
-    ✓ counts "qu" as a single phoneme (1 ms)
-    ✓ counts "qu" as a consonant even when its preceded by a consonant
-    ✕ translates many words (1 ms)
+FAIL archive/archived_snakeCase/snakeCase.spec.js
+  snakeCase
+    ✓ works with simple lowercased phrases (2 ms)
+    ✓ works with Caps and punctuation
+    ✓ works with longer phrases
+    ✓ works with camel case
+    ✓ works with kebab case
+    ✕ works with WTF case (2 ms)
 
-  ● translate › translates a word beginning with a vowel
+  ● snakeCase › works with WTF case
 
-    expect(received).toBe(expected) // Object.is equality
+    expect(received).toEqual(expected) // deep equality
 
-    Expected: "appleay"
-    Received: "appleway"
+    Expected: "snake_case_is_awesome"
+    Received: "sn_ak_e_ca_se_is_aw_es_om_e"
 
-      20 | describe('translate', () => {
-      21 | 	test('translates a word beginning with a vowel', () => {
-    > 22 | 		expect(pigLatin("apple")).toBe('appleay');
-         | 		                          ^
-      23 | 	});
-      24 |
-      25 | 	test('translates a word beginning with a consonant', () => {
+      18 |   });
+      19 |   test('works with WTF case', () => {
+    > 20 |     expect(snakeCase('SnAkE..CaSe..Is..AwEsOmE')).toEqual('snake_case_is_awesome');
+         |                                                   ^
+      21 |   });
+      22 | });
+      23 |
 
-      at Object.toBe (archive/archived_pigLatin/pigLatin.spec.js:22:29)
-
-  ● translate › translates two words
-
-    expect(received).toBe(expected) // Object.is equality
-
-    Expected: "eatay iepay"
-    Received: "eat pieway"
-
-      32 |
-      33 | 	test('translates two words', () => {
-    > 34 | 		expect(pigLatin("eat pie")).toBe('eatay iepay');
-         | 		                            ^
-      35 | 	});
-      36 |
-      37 | 	test('translates a word beginning with three consonants', () => {
-
-      at Object.toBe (archive/archived_pigLatin/pigLatin.spec.js:34:31)
-
-  ● translate › translates many words
-
-    expect(received).toBe(expected) // Object.is equality
-
-    Expected: "ethay ickquay ownbray oxfay"
-    Received: "e quick brown foxthay"
-
-      52 |
-      53 | 	test('translates many words', () => {
-    > 54 | 		expect(pigLatin("the quick brown fox")).toBe("ethay ickquay ownbray oxfay");
-         | 		                                        ^
-      55 | 	});
-      56 | });
-      57 |
-
-      at Object.toBe (archive/archived_pigLatin/pigLatin.spec.js:54:43)
+      at Object.toEqual (archive/archived_snakeCase/snakeCase.spec.js:20:51)
 
 Test Suites: 1 failed, 1 total
-Tests:       3 failed, 6 passed, 9 total
+Tests:       1 failed, 5 passed, 6 total
 Snapshots:   0 total
-Time:        0.196 s, estimated 1 s
-Ran all test suites matching pigLatin.spec.js.
+Time:        0.184 s, estimated 1 s
+Ran all test suites matching snakeCase.spec.js.
