@@ -5,18 +5,18 @@
 FAIL archive/archived_snakeCase/snakeCase.spec.js
   snakeCase
     ✓ works with simple lowercased phrases (2 ms)
-    ✓ works with Caps and punctuation
+    ✓ works with Caps and punctuation (1 ms)
     ✓ works with longer phrases
-    ✓ works with camel case
+    ✓ works with camel case (1 ms)
     ✓ works with kebab case
-    ✕ works with WTF case (2 ms)
+    ✕ works with WTF case (3 ms)
 
   ● snakeCase › works with WTF case
 
     expect(received).toEqual(expected) // deep equality
 
     Expected: "snake_case_is_awesome"
-    Received: "sn_ak_e_ca_se_is_aw_es_om_e"
+    Received: "sn_ake_ca_se_is_aw_es_ome"
 
       18 |   });
       19 |   test('works with WTF case', () => {
@@ -31,5 +31,5 @@ FAIL archive/archived_snakeCase/snakeCase.spec.js
 Test Suites: 1 failed, 1 total
 Tests:       1 failed, 5 passed, 6 total
 Snapshots:   0 total
-Time:        0.184 s, estimated 1 s
+Time:        0.181 s, estimated 1 s
 Ran all test suites matching snakeCase.spec.js.

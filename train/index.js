@@ -1,24 +1,44 @@
-function pigLatin(word) {
-  const vowels = ['a','e','i','o','u'];
-  const lower = word.toLowerCase();
+const snakeCase = function(str) {
+  const words = [];
+  let current = '';
 
-  if (vowels.includes(lower[0])) {
-    return word + "way";
-  }
-  let index = 0;
+  for (let i = 0; i < str.length; i++){
+    const char = str[i];
+    const prev = str[i - 1];
+    const next = str[i + 1];
 
-  while (index < lower.length) {
-    if (lower[index] === 'q' && lower[index + 1] === 'u'){
-      index += 2;
+    if(!isAlphaNumeric(char)){
+      if (current) {
+        words.push(current.toLowerCase());
+        current = '';
+      }
       continue;
     }
 
-    if(vowels.includes(lower[index])) {
-      break;
+    if(prev && isLower(prev) && isUpper(char) && next && isLower(next)){
+      words.push(current.toLowerCase());
+      current = char;
+      continue;
     }
-
-    index++;
+    current += char;
   }
-  return (word.slice(index) + word.slice(0,index) + 'ay');
+
+    if (current) {
+      words.push(current.toLowerCase());
+    }
+    return words.join('_');
 };
 
+function isUpper(c){
+  return c >= 'A' && c <= 'Z';
+}
+
+function isLower(c) {
+  return c >= 'a' && c <= 'z';
+}
+
+function isAlphaNumeric(c){
+  return isUpper(c) || isLower(c) || (c >= '0' && c <= '9');
+}
+
+module.exports = snakeCase;
