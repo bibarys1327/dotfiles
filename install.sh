@@ -127,6 +127,12 @@ if [ -f "$HOME/my-dev-env/scripts/setup.sh" ]; then
   bash "$HOME/my-dev-env/scripts/setup.sh"
 fi
 
+echo ">>> Installing vscode-js-debug..."
+if [ ! -d "$HOME/vscode-js-debug" ]; then
+    git clone https://github.com/microsoft/vscode-js-debug.git ~/vscode-js-debug
+    cd ~/vscode-js-debug && npm install --legacy-peer-deps && npx gulp dapDebugServer && cd -
+fi
+
 echo ">>> All Done!"
 echo "ℹ️ Log out (or run 'newgrp docker') to make the docker group work"
 echo "ℹ️ Enable Zsh now: run 'exec zsh'"
