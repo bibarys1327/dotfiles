@@ -30,3 +30,7 @@ cp .env.example .env
 make install
 make up
 
+Запусти автоматическую установку:
+
+chmod +x scripts/setup.sh
+./scripts/setup.sh
