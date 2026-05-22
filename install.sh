@@ -133,6 +133,23 @@ if [ ! -d "$HOME/vscode-js-debug" ]; then
     cd ~/vscode-js-debug && npm install --legacy-peer-deps && npx gulp dapDebugServer && cd -
 fi
 
+echo ">>> Installing modern CLI tools..."
+# eza (замена ls)
+if ! command -v eza >/dev/null 2>&1; then
+    sudo mkdir -p /etc/apt/keyrings
+    wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+    sudo apt update
+    sudo apt install -y eza
+fi
+
+# bottom (системный монитор)
+if ! command -v btm >/dev/null 2>&1; then
+    curl -LO https://github.com/ClementTsang/bottom/releases/download/0.10.2/bottom_0.10.2_amd64.deb
+    sudo dpkg -i bottom_0.10.2_amd64.deb
+    rm bottom_0.10.2_amd64.deb
+fi
+
 echo ">>> All Done!"
 echo "ℹ️ Log out (or run 'newgrp docker') to make the docker group work"
 echo "ℹ️ Enable Zsh now: run 'exec zsh'"
